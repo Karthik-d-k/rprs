@@ -1,8 +1,8 @@
 #![allow(unused)]
 
-use std::{io, fs, env};
-use std::path::{Path, PathBuf};
 use std::error::Error;
+use std::path::{Path, PathBuf};
+use std::{env, fs, io};
 
 pub struct Config {
     pub src_dir: PathBuf,
@@ -11,8 +11,12 @@ pub struct Config {
 
 impl Config {
     pub fn new(mut args: env::Args) -> Result<Config, &'static str> {
-        let src_dir = std::env::args().nth(1).expect("Source directory is missing");
-        let des_dir = std::env::args().nth(2).expect("Destination directory is missing");
+        let src_dir = std::env::args()
+            .nth(1)
+            .expect("Source directory is missing");
+        let des_dir = std::env::args()
+            .nth(2)
+            .expect("Destination directory is missing");
 
         let src_dir = PathBuf::from(src_dir);
         let des_dir = PathBuf::from(des_dir);
@@ -22,10 +26,7 @@ impl Config {
         } else if !des_dir.exists() {
             Err("<des_dir> does not exits!!")
         } else {
-            Ok(Config {
-            src_dir,
-            des_dir,
-        })
+            Ok(Config { src_dir, des_dir })
         }
     }
 }

@@ -1,5 +1,5 @@
-use std::{env, process};
 use rprs::Config;
+use std::{env, process};
 
 fn main() {
     let config = Config::new(env::args()).unwrap_or_else(|err| {
