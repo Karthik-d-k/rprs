@@ -35,6 +35,23 @@ pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
     let src_files = get_files(config.src_dir)?;
     let des_files = get_files(config.des_dir)?;
 
+    replace_files(&src_files, &des_files)?;
+
+    Ok(())
+}
+
+pub fn replace_files(
+    src_files: &Vec<PathBuf>,
+    des_files: &Vec<PathBuf>,
+) -> Result<(), Box<dyn Error>> {
+    for src_file in src_files {
+        for des_file in des_files {
+            if src_file.file_name() == des_file.file_name() {
+                fs::copy(src_file, des_file)?;
+            }
+        }
+    }
+
     Ok(())
 }
 
@@ -51,7 +68,7 @@ fn _get_files(vec: &mut Vec<PathBuf>, path: PathBuf) -> io::Result<()> {
     Ok(())
 }
 
-fn get_files<T: Into<PathBuf>>(path: T) -> io::Result<Vec<PathBuf>> {
+pub fn get_files<T: Into<PathBuf>>(path: T) -> io::Result<Vec<PathBuf>> {
     let mut vec = Vec::new();
     let path = path.into();
     _get_files(&mut vec, path);
@@ -64,10 +81,34 @@ mod tests {
 
     #[test]
     fn test_iterate_pathbuf_vec() -> Result<(), Box<dyn Error>> {
-        let src_dir = PathBuf::from(r"./src/");
-        let mut src_files = get_files(src_dir)?;
+        let src_dir = PathBuf::from(r"./tmp/src");
+        let src_files = get_files(src_dir)?;
 
-        assert_eq!(src_files, [PathBuf::from(r"./src/lib.rs"), PathBuf::from(r"./src/main.rs")]);
+        assert_eq!(
+            src_files,
+            [
+                PathBuf::from(r"./tmp/src/bar.txt"),
+                PathBuf::from(r"./tmp/src/foo.txt")
+            ]
+        );
+
+        Ok(())
+    }
+
+    #[test]
+    fn test_replace_files() -> Result<(), Box<dyn Error>> {
+        let src_dir = PathBuf::from(r"./tmp/src");
+        let des_dir = PathBuf::from(r"./tmp/des");
+
+        let src_files = get_files(src_dir)?;
+        let des_files = get_files(des_dir)?;
+
+        replace_files(&src_files, &des_files)?;
+        let des_bar_content = fs::read_to_string(&des_files[0])?;
+        let des_foo_content = fs::read_to_string(&des_files[1])?;
+
+        assert_eq!(des_bar_content, "src/bar.txt".to_string());
+        assert_eq!(des_foo_content, "src/foo.txt".to_string());
 
         Ok(())
     }
