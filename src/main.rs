@@ -4,7 +4,7 @@ use std::{env, process};
 fn main() {
     let config = Config::new(env::args()).unwrap_or_else(|err| {
         eprintln!("Problem parsing arguments: {}", err);
-        eprintln!("Usage: <rprs> <src_dir> <des_dir>");
+        eprintln!("Usage: <rprs> <src_dir> <des_dir> <enable_case_sensitive(optional)>");
 
         process::exit(1);
     });
