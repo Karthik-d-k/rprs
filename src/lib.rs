@@ -1,7 +1,5 @@
-#![allow(unused)]
-
 use std::error::Error;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use std::{env, fs, io};
 
 pub struct Config {
@@ -88,7 +86,7 @@ fn _get_files(vec: &mut Vec<PathBuf>, path: PathBuf) -> io::Result<()> {
         let paths = fs::read_dir(&path)?;
         for path_result in paths {
             let full_path = path_result?.path();
-            _get_files(vec, full_path);
+            _get_files(vec, full_path)?;
         }
     } else {
         vec.push(path);
@@ -99,7 +97,7 @@ fn _get_files(vec: &mut Vec<PathBuf>, path: PathBuf) -> io::Result<()> {
 pub fn get_files<T: Into<PathBuf>>(path: T) -> io::Result<Vec<PathBuf>> {
     let mut vec = Vec::new();
     let path = path.into();
-    _get_files(&mut vec, path);
+    _get_files(&mut vec, path)?;
     Ok(vec)
 }
 
