@@ -107,16 +107,16 @@ mod tests {
 
     #[test]
     fn test_iterate_pathbuf_vec() -> Result<(), Box<dyn Error>> {
-        let src_dir = PathBuf::from(r"./tmp/src");
+        let src_dir = PathBuf::from(r"./test/src");
         let src_files = get_files(src_dir)?;
 
         assert_eq!(
             src_files,
             [
-                PathBuf::from(r"./tmp/src/a.txt"),
-                PathBuf::from(r"./tmp/src/b.txt"),
-                PathBuf::from(r"./tmp/src/c.txt"),
-                PathBuf::from(r"./tmp/src/d.txt")
+                PathBuf::from(r"./test/src/a.txt"),
+                PathBuf::from(r"./test/src/b.txt"),
+                PathBuf::from(r"./test/src/c.txt"),
+                PathBuf::from(r"./test/src/d.txt")
             ]
         );
 
@@ -125,8 +125,8 @@ mod tests {
 
     #[test]
     fn test_replace_files() -> Result<(), Box<dyn Error>> {
-        let src_dir = PathBuf::from(r"./tmp/src");
-        let des_dir = PathBuf::from(r"./tmp/des");
+        let src_dir = PathBuf::from(r"./test/src");
+        let des_dir = PathBuf::from(r"./test/des");
 
         let mut src_files = get_files(src_dir)?;
         let mut des_files = get_files(des_dir)?;
@@ -146,8 +146,8 @@ mod tests {
 
     #[test]
     fn test_replace_files_case_insensitive() -> Result<(), Box<dyn Error>> {
-        let src_dir = PathBuf::from(r"./tmp/src");
-        let des_dir = PathBuf::from(r"./tmp/des");
+        let src_dir = PathBuf::from(r"./test/src");
+        let des_dir = PathBuf::from(r"./test/des");
 
         let mut src_files = get_files(src_dir)?;
         let mut des_files = get_files(des_dir)?;
