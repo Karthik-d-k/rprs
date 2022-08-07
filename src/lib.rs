@@ -106,10 +106,14 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_iterate_pathbuf_vec() -> Result<(), Box<dyn Error>> {
+    fn test_get_files() -> Result<(), Box<dyn Error>> {
         let src_dir = PathBuf::from(r"./test/src");
+        let des_dir = PathBuf::from(r"./test/des");
+
         let mut src_files = get_files(src_dir)?;
+        let mut des_files = get_files(des_dir)?;
         src_files.sort();
+        des_files.sort();
 
         assert_eq!(
             src_files,
@@ -118,6 +122,16 @@ mod tests {
                 PathBuf::from(r"./test/src/b.txt"),
                 PathBuf::from(r"./test/src/c.txt"),
                 PathBuf::from(r"./test/src/d.txt")
+            ]
+        );
+
+        assert_eq!(
+            des_files,
+            [
+                PathBuf::from(r"./test/des/A/A.txt"),
+                PathBuf::from(r"./test/des/b.txt"),
+                PathBuf::from(r"./test/des/c.txt"),
+                PathBuf::from(r"./test/des/d.txt")
             ]
         );
 
