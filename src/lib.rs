@@ -108,7 +108,8 @@ mod tests {
     #[test]
     fn test_iterate_pathbuf_vec() -> Result<(), Box<dyn Error>> {
         let src_dir = PathBuf::from(r"./test/src");
-        let src_files = get_files(src_dir)?;
+        let mut src_files = get_files(src_dir)?;
+        src_files.sort();
 
         assert_eq!(
             src_files,
@@ -130,6 +131,8 @@ mod tests {
 
         let mut src_files = get_files(src_dir)?;
         let mut des_files = get_files(des_dir)?;
+        src_files.sort();
+        des_files.sort();
         // remove 1st 2 files
         src_files.drain(0..2);
         des_files.drain(0..2);
@@ -151,6 +154,8 @@ mod tests {
 
         let mut src_files = get_files(src_dir)?;
         let mut des_files = get_files(des_dir)?;
+        src_files.sort();
+        des_files.sort();
         // remove last 2 files
         src_files.drain(2..);
         des_files.drain(2..);
