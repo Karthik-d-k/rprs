@@ -113,8 +113,10 @@ mod tests {
         assert_eq!(
             src_files,
             [
-                PathBuf::from(r"./tmp/src/Bar.txt"),
-                PathBuf::from(r"./tmp/src/foo.txt")
+                PathBuf::from(r"./tmp/src/a.txt"),
+                PathBuf::from(r"./tmp/src/b.txt"),
+                PathBuf::from(r"./tmp/src/c.txt"),
+                PathBuf::from(r"./tmp/src/d.txt")
             ]
         );
 
@@ -126,13 +128,18 @@ mod tests {
         let src_dir = PathBuf::from(r"./tmp/src");
         let des_dir = PathBuf::from(r"./tmp/des");
 
-        let src_files = get_files(src_dir)?;
-        let des_files = get_files(des_dir)?;
+        let mut src_files = get_files(src_dir)?;
+        let mut des_files = get_files(des_dir)?;
+        // remove 1st 2 files
+        src_files.drain(0..2);
+        des_files.drain(0..2);
 
         replace_files(&src_files, &des_files)?;
-        let des_foo_content = fs::read_to_string(&des_files[1])?;
+        let des_c_content = fs::read_to_string(&des_files[0])?;
+        let des_d_content = fs::read_to_string(&des_files[1])?;
 
-        assert_eq!(des_foo_content, "src/foo.txt".to_string());
+        assert_eq!(des_c_content, "src/c.txt".to_string());
+        assert_eq!(des_d_content, "src/d.txt".to_string());
 
         Ok(())
     }
@@ -142,13 +149,18 @@ mod tests {
         let src_dir = PathBuf::from(r"./tmp/src");
         let des_dir = PathBuf::from(r"./tmp/des");
 
-        let src_files = get_files(src_dir)?;
-        let des_files = get_files(des_dir)?;
+        let mut src_files = get_files(src_dir)?;
+        let mut des_files = get_files(des_dir)?;
+        // remove last 2 files
+        src_files.drain(2..);
+        des_files.drain(2..);
 
         replace_files_case_insensitive(&src_files, &des_files)?;
-        let des_bar_content = fs::read_to_string(&des_files[0])?;
+        let des_a_content = fs::read_to_string(&des_files[0])?;
+        let des_b_content = fs::read_to_string(&des_files[1])?;
 
-        assert_eq!(des_bar_content, "src/Bar.txt".to_string());
+        assert_eq!(des_a_content, "src/a.txt".to_string());
+        assert_eq!(des_b_content, "src/b.txt".to_string());
 
         Ok(())
     }
