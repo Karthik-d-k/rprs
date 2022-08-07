@@ -13,6 +13,13 @@ rprs <src_dir> <des_dir> <enable_case_sensitive(optional)>
 - `des_dir` --> Path to destinatin directory.
 - `enable_case_sensitive` --> Enabling case sensitivity for file names while replacing (optional), defaults to case insensitive.
 
+## Caveat
+|OS      | Tested           | Working          |
+|--------|:----------------:|:----------------:|
+|Linux   |:heavy_check_mark:|:heavy_check_mark:|
+|Windows |:x:               |:x:               |
+|MacOS   |:x:               |:x:               |
+
 ## About tool name
 `rprs` is a combination of following words -->
 - `rp` -> Stands for **replace**
