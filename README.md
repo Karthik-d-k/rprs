@@ -1,6 +1,10 @@
 # rprs
 :crab: A CLI app for replacing files from source to desination directory.
 
+## Install
+1. Binaries are placed in the [release tags](https://github.com/Karthik-d-k/rprs/releases/tag/v0.1.0-alpha), you can choose depending on your OS.
+2. Download and extract the binary and you are all set to use the tool.
+
 ## Usage
 ```bash
 rprs <src_dir> <des_dir> <enable_case_sensitive(optional)>
