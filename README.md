@@ -7,11 +7,14 @@
 
 ## Usage
 ```bash
-rprs <src_dir> <des_dir> <enable_case_sensitive(optional)>
+rprs <src_dir> <des_dir> <max_depth(optional)> <enable_case_sensitive(optional)>
 ```
 - `src_dir` --> Path to source directory.
 - `des_dir` --> Path to destinatin directory.
-- `enable_case_sensitive` --> Enabling case sensitivity for file names while replacing (optional), defaults to case insensitive.
+- `max_depth` --> maximum alowed depth to recurse through given directory (optional)
+  - Should be set to positive inreger `> 0`, default value is `255`
+- `enable_case_sensitive` --> Enabling case sensitivity for file names while replacing (optional)
+  - Should be set to either to `true` or `false`, default is `false`
 
 ## Caveat
 |OS      | Tested           | Working          |

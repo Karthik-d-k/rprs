@@ -5,7 +5,8 @@ use std::{env, fs, io};
 pub struct Config {
     pub src_dir: PathBuf,
     pub des_dir: PathBuf,
-    enable_case_sensitive: bool,
+    pub max_depth: usize,
+    pub enable_case_sensitive: bool,
 }
 
 impl Config {
@@ -14,10 +15,12 @@ impl Config {
 
         let src_dir = args.next().expect("Source directory is missing");
         let des_dir = args.next().expect("Destination directory is missing");
+        let max_depth = args.next().unwrap_or_else(|| "255".to_string());
         let enable_case_sensitive = args.next().unwrap_or_else(|| "false".to_string());
 
         let src_dir = PathBuf::from(src_dir);
         let des_dir = PathBuf::from(des_dir);
+        let max_depth: usize = max_depth.trim().parse().unwrap();
         let enable_case_sensitive: bool = enable_case_sensitive.trim().parse().unwrap();
 
         if !src_dir.exists() {
@@ -28,6 +31,7 @@ impl Config {
             Ok(Config {
                 src_dir,
                 des_dir,
+                max_depth,
                 enable_case_sensitive,
             })
         }
@@ -35,8 +39,8 @@ impl Config {
 }
 
 pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
-    let src_files = get_files(config.src_dir)?;
-    let des_files = get_files(config.des_dir)?;
+    let src_files = get_files(config.src_dir, config.max_depth)?;
+    let des_files = get_files(config.des_dir, config.max_depth)?;
 
     if config.enable_case_sensitive {
         replace_files(&src_files, &des_files)?;
@@ -81,23 +85,25 @@ pub fn replace_files_case_insensitive(
     Ok(())
 }
 
-fn _get_files(vec: &mut Vec<PathBuf>, path: PathBuf) -> io::Result<()> {
-    if path.is_dir() {
+fn _get_files(vec: &mut Vec<PathBuf>, path: PathBuf, mut depth: usize) -> io::Result<()> {
+    if path.is_dir() && depth != 0 {
+        depth -= 1;
         let paths = fs::read_dir(&path)?;
         for path_result in paths {
             let full_path = path_result?.path();
-            _get_files(vec, full_path)?;
+            _get_files(vec, full_path, depth)?;
         }
-    } else {
+    } else if path.is_file(){
         vec.push(path);
     }
     Ok(())
 }
 
-pub fn get_files<T: Into<PathBuf>>(path: T) -> io::Result<Vec<PathBuf>> {
+pub fn get_files<T: Into<PathBuf>>(path: T, max_depth:usize) -> io::Result<Vec<PathBuf>> {
     let mut vec = Vec::new();
     let path = path.into();
-    _get_files(&mut vec, path)?;
+
+    _get_files(&mut vec, path, max_depth)?;
     Ok(vec)
 }
 
@@ -110,8 +116,8 @@ mod tests {
         let src_dir = PathBuf::from(r"./test/src");
         let des_dir = PathBuf::from(r"./test/des");
 
-        let mut src_files = get_files(src_dir)?;
-        let mut des_files = get_files(des_dir)?;
+        let mut src_files = get_files(src_dir, 2)?;
+        let mut des_files = get_files(des_dir, 2)?;
         src_files.sort();
         des_files.sort();
 
@@ -139,12 +145,31 @@ mod tests {
     }
 
     #[test]
+    fn test_max_depth() -> Result<(), Box<dyn Error>> {
+        let des_dir = PathBuf::from(r"./test/des");
+
+        let mut des_files = get_files(des_dir, 1)?;
+        des_files.sort();
+
+        assert_eq!(
+            des_files,
+            [
+                PathBuf::from(r"./test/des/b.txt"),
+                PathBuf::from(r"./test/des/c.txt"),
+                PathBuf::from(r"./test/des/d.txt")
+            ]
+        );
+
+        Ok(())
+    }
+
+    #[test]
     fn test_replace_files() -> Result<(), Box<dyn Error>> {
         let src_dir = PathBuf::from(r"./test/src");
         let des_dir = PathBuf::from(r"./test/des");
 
-        let mut src_files = get_files(src_dir)?;
-        let mut des_files = get_files(des_dir)?;
+        let mut src_files = get_files(src_dir, 2)?;
+        let mut des_files = get_files(des_dir, 2)?;
         src_files.sort();
         des_files.sort();
         // remove 1st 2 files
@@ -166,8 +191,8 @@ mod tests {
         let src_dir = PathBuf::from(r"./test/src");
         let des_dir = PathBuf::from(r"./test/des");
 
-        let mut src_files = get_files(src_dir)?;
-        let mut des_files = get_files(des_dir)?;
+        let mut src_files = get_files(src_dir, 2)?;
+        let mut des_files = get_files(des_dir, 2)?;
         src_files.sort();
         des_files.sort();
         // remove last 2 files
