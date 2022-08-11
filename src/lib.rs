@@ -85,26 +85,35 @@ pub fn replace_files_case_insensitive(
     Ok(())
 }
 
-fn _get_files(vec: &mut Vec<PathBuf>, path: PathBuf, mut depth: usize) -> io::Result<()> {
-    if path.is_dir() && depth != 0 {
-        depth -= 1;
-        let paths = fs::read_dir(&path)?;
+fn _store_dirs_and_files(files: &mut Vec<PathBuf>, dirs: &mut Vec<PathBuf>) -> io::Result<()> {
+    // create a new copy and empty the vector
+    let _dirs: Vec<PathBuf> = dirs.drain(..).collect();
+
+    for dir in _dirs {
+        let paths = fs::read_dir(dir)?;
         for path_result in paths {
             let full_path = path_result?.path();
-            _get_files(vec, full_path, depth)?;
+            if full_path.is_dir() {
+                dirs.push(full_path)
+            } else {
+                files.push(full_path)
+            }
         }
-    } else if path.is_file(){
-        vec.push(path);
     }
+
     Ok(())
 }
 
-pub fn get_files<T: Into<PathBuf>>(path: T, max_depth:usize) -> io::Result<Vec<PathBuf>> {
-    let mut vec = Vec::new();
-    let path = path.into();
+pub fn get_files(path: PathBuf, max_depth: usize) -> io::Result<Vec<PathBuf>> {
+    let mut files = Vec::new();
+    let mut dirs = Vec::new();
 
-    _get_files(&mut vec, path, max_depth)?;
-    Ok(vec)
+    dirs.push(path);
+    for _ in 0..max_depth {
+        _store_dirs_and_files(&mut files, &mut dirs)?;
+    }
+
+    Ok(files)
 }
 
 #[cfg(test)]
