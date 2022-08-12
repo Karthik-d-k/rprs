@@ -20,7 +20,7 @@ rprs <src_dir> <des_dir> <max_depth(optional)> <enable_case_sensitive(optional)>
 |OS      | Tested           | Working          |
 |--------|:----------------:|:----------------:|
 |Linux   |:heavy_check_mark:|:heavy_check_mark:|
-|Windows |:heavy_check_mark:|:question:        |
+|Windows |:heavy_check_mark:|:heavy_check_mark:|
 |MacOS   |:heavy_check_mark:|:question:        |
 > :question: --> I haven't tested it myself, but CI tests are passing.
 
