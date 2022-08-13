@@ -15,6 +15,7 @@ rprs <src_dir> <des_dir> <max_depth(optional)> <enable_case_sensitive(optional)>
   - Should be set to positive integer `> 0`, default value is `255`
 - `enable_case_sensitive` --> Enabling case sensitivity for file names while replacing (optional)
   - Should be set to either to `true` or `false`, default is `false`
+> By default, `hidden directories` that starts with `.` are untouched !!!
 
 ## Caveats
 |OS      | Tested           | Working          |
