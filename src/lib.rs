@@ -85,11 +85,20 @@ pub fn replace_files_case_insensitive(
     Ok(())
 }
 
+fn is_hidden(dir: &PathBuf) -> bool {
+    dir.file_name()
+        .unwrap()
+        .to_str()
+        .map(|s| s.starts_with("."))
+        .unwrap_or(false)
+}
+
 fn _store_dirs_and_files(files: &mut Vec<PathBuf>, dirs: &mut Vec<PathBuf>) -> io::Result<()> {
     // create a new copy and empty the vector
-    let _dirs: Vec<PathBuf> = dirs.drain(..).collect();
+    let mut _dirs: Vec<PathBuf> = dirs.drain(..).collect();
+    _dirs.retain(|dir| !is_hidden(dir));
 
-    for dir in _dirs {
+    for dir in &_dirs {
         let paths = fs::read_dir(dir)?;
         for path_result in paths {
             let full_path = path_result?.path();
