@@ -2,6 +2,8 @@ use std::error::Error;
 use std::path::PathBuf;
 use std::{env, fs, io};
 
+use indicatif::ProgressBar;
+
 pub struct Config {
     pub src_dir: PathBuf,
     pub des_dir: PathBuf,
@@ -55,13 +57,17 @@ pub fn replace_files(
     src_files: &Vec<PathBuf>,
     des_files: &Vec<PathBuf>,
 ) -> Result<(), Box<dyn Error>> {
+    let pb = ProgressBar::new(src_files.len() as u64);
+
     for src_file in src_files {
         for des_file in des_files {
             if src_file.file_name() == des_file.file_name() {
                 fs::copy(src_file, des_file)?;
             }
         }
+        pb.inc(1);
     }
+    pb.finish();
 
     Ok(())
 }
@@ -70,6 +76,8 @@ pub fn replace_files_case_insensitive(
     src_files: &Vec<PathBuf>,
     des_files: &Vec<PathBuf>,
 ) -> Result<(), Box<dyn Error>> {
+    let pb = ProgressBar::new(src_files.len() as u64);
+
     for src_file in src_files {
         for des_file in des_files {
             if src_file
@@ -80,7 +88,9 @@ pub fn replace_files_case_insensitive(
                 fs::copy(src_file, des_file)?;
             }
         }
+        pb.inc(1);
     }
+    pb.finish();
 
     Ok(())
 }
