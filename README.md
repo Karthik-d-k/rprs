@@ -29,3 +29,4 @@ rprs <src_dir> <des_dir> <max_depth(optional)> <enable_case_sensitive(optional)>
 `rprs` is a combination of following words -->
 - `rp` -> Stands for **replace**
 - `rs` -> Stands for **rust**
+> `replacer` written in `rust` !!
