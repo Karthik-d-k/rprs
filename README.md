@@ -1,5 +1,5 @@
 # rprs
-:crab: A CLI app for replacing files from source to desination directory.
+:crab: A CLI app for replacing files.
 
 ## Install
 1. Binaries are placed in the [releases](https://github.com/Karthik-d-k/rprs/releases), you can choose depending on your OS.
