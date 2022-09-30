@@ -1,5 +1,5 @@
 use std::error::Error;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::{env, fs, io};
 
 use indicatif::ProgressBar;
@@ -95,17 +95,18 @@ pub fn replace_files_case_insensitive(
     Ok(())
 }
 
-fn is_hidden(dir: &PathBuf) -> bool {
+fn is_hidden(dir: &Path) -> bool {
     dir.file_name()
         .unwrap()
         .to_str()
-        .map(|s| s.starts_with("."))
+        .map(|s| s.starts_with('.'))
         .unwrap_or(false)
 }
 
 fn _store_dirs_and_files(files: &mut Vec<PathBuf>, dirs: &mut Vec<PathBuf>) -> io::Result<()> {
-    // create a new copy and empty the vector
+    // create a new copy and empty the dirs vector
     let mut _dirs: Vec<PathBuf> = dirs.drain(..).collect();
+    // remove hidden files
     _dirs.retain(|dir| !is_hidden(dir));
 
     for dir in &_dirs {
@@ -125,9 +126,8 @@ fn _store_dirs_and_files(files: &mut Vec<PathBuf>, dirs: &mut Vec<PathBuf>) -> i
 
 pub fn get_files(path: PathBuf, max_depth: usize) -> io::Result<Vec<PathBuf>> {
     let mut files = Vec::new();
-    let mut dirs = Vec::new();
+    let mut dirs = vec![path];
 
-    dirs.push(path);
     for _ in 0..max_depth {
         _store_dirs_and_files(&mut files, &mut dirs)?;
     }
