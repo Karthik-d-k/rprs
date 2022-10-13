@@ -1,11 +1,14 @@
 [package]
 name = "rprs"
+description = "A CLI app for replacing files from source to desination directory."
 version = "0.1.0"
 edition = "2021"
+authors = ["Karthik D K <karthikdk1998@gmail.com>"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [profile.release]
 
 [dependencies]
-indicatif = "0.17.0"
+clap = { version = "4.0", features = ["derive"] }
+indicatif = "0.17.1"

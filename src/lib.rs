@@ -1,50 +1,31 @@
 use std::error::Error;
 use std::path::{Path, PathBuf};
-use std::{env, fs, io};
+use std::{fs, io};
 
+use clap::Parser;
 use indicatif::ProgressBar;
 
-pub struct Config {
-    pub src_dir: PathBuf,
-    pub des_dir: PathBuf,
-    pub max_depth: usize,
-    pub enable_case_sensitive: bool,
+#[derive(Parser)]
+#[command(author, version, about, long_about = None)]
+struct Cli {
+    /// Path to source directory
+    src_dir: PathBuf,
+    /// Path to destinatin directory
+    des_dir: PathBuf,
+    /// Enabling case sensitivity for file names while replacing
+    #[arg(short, long)]
+    enable_case_sensitive: bool,
+    /// maximum allowed depth to recurse through source directory
+    #[arg(short, long, default_value_t = 255)]
+    max_depth: usize,
 }
 
-impl Config {
-    pub fn new(mut args: env::Args) -> Result<Config, &'static str> {
-        args.next(); // skip program name
+pub fn run() -> Result<(), Box<dyn Error>> {
+    let args = Cli::parse();
+    let src_files = get_files(args.src_dir, args.max_depth)?;
+    let des_files = get_files(args.des_dir, args.max_depth)?;
 
-        let src_dir = args.next().expect("Source directory is missing");
-        let des_dir = args.next().expect("Destination directory is missing");
-        let max_depth = args.next().unwrap_or_else(|| "255".to_string());
-        let enable_case_sensitive = args.next().unwrap_or_else(|| "false".to_string());
-
-        let src_dir = PathBuf::from(src_dir);
-        let des_dir = PathBuf::from(des_dir);
-        let max_depth: usize = max_depth.trim().parse().unwrap();
-        let enable_case_sensitive: bool = enable_case_sensitive.trim().parse().unwrap();
-
-        if !src_dir.exists() {
-            Err("<src_dir> does not exits!!")
-        } else if !des_dir.exists() {
-            Err("<des_dir> does not exits!!")
-        } else {
-            Ok(Config {
-                src_dir,
-                des_dir,
-                max_depth,
-                enable_case_sensitive,
-            })
-        }
-    }
-}
-
-pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
-    let src_files = get_files(config.src_dir, config.max_depth)?;
-    let des_files = get_files(config.des_dir, config.max_depth)?;
-
-    if config.enable_case_sensitive {
+    if args.enable_case_sensitive {
         replace_files(&src_files, &des_files)?;
     } else {
         replace_files_case_insensitive(&src_files, &des_files)?;
@@ -97,7 +78,7 @@ pub fn replace_files_case_insensitive(
 
 fn is_hidden(dir: &Path) -> bool {
     dir.file_name()
-        .unwrap()
+        .unwrap_or_default()
         .to_str()
         .map(|s| s.starts_with('.'))
         .unwrap_or(false)
