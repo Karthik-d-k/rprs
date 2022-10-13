@@ -7,14 +7,20 @@
 
 ## Usage
 ```bash
-rprs <src_dir> <des_dir> <max_depth(optional)> <enable_case_sensitive(optional)>
+$ rprs[exe] [OPTIONS] <SRC_DIR> <DES_DIR>
 ```
-- `src_dir` --> Path to source directory.
-- `des_dir` --> Path to destinatin directory.
-- `max_depth` --> maximum allowed depth to recurse through given directory (optional)
-  - Should be set to positive integer `> 0`, default value is `255`
-- `enable_case_sensitive` --> Enabling case sensitivity for file names while replacing (optional)
-  - Should be set to either to `true` or `false`, default is `false`
+**Arguments:**
+```
+  <SRC_DIR>  Path to source directory
+  <DES_DIR>  Path to destinatin directory
+```
+**Options:**
+```
+  -e, --enable-case-sensitive  Enabling case sensitivity for file names while replacing
+  -m, --max-depth <MAX_DEPTH>  maximum allowed depth to recurse through source directory [default: 255]
+  -h, --help                   Print help information
+  -V, --version                Print version information
+```
 > By default, `hidden directories` that starts with `.` are untouched !!!
 
 ## Caveats
