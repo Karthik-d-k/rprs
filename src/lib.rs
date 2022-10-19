@@ -13,20 +13,33 @@ struct Cli {
     /// Path to destinatin directory
     des_dir: PathBuf,
     /// Enabling case sensitivity for file names while replacing
-    #[arg(short = 'C', long)]
+    #[arg(short = 'c', long)]
     enable_case_sensitive: bool,
     /// Enabling hidden directories for replacing files
-    #[arg(short = 'H', long)]
+    #[arg(short = 'h', long)]
     enable_hidden_dirs: bool,
     /// maximum allowed depth to recurse through source directory
-    #[arg(short = 'D', long, default_value_t = 255)]
+    #[arg(short = 'd', long, default_value_t = 255)]
     max_depth: usize,
+    /// list of file paths to ignore
+    #[arg(short = 'i', long)]
+    ignore_paths: Vec<PathBuf>,
 }
 
 pub fn run() -> Result<(), Box<dyn Error>> {
     let args = Cli::parse();
-    let src_files = get_files(args.src_dir, args.max_depth, args.enable_hidden_dirs)?;
-    let des_files = get_files(args.des_dir, args.max_depth, args.enable_hidden_dirs)?;
+    let src_files = get_files(
+        args.src_dir,
+        args.max_depth,
+        args.enable_hidden_dirs,
+        &args.ignore_paths,
+    )?;
+    let des_files = get_files(
+        args.des_dir,
+        args.max_depth,
+        args.enable_hidden_dirs,
+        &args.ignore_paths,
+    )?;
 
     if args.enable_case_sensitive {
         replace_files(&src_files, &des_files)?;
@@ -97,6 +110,7 @@ fn _store_dirs_and_files(
     files: &mut Vec<PathBuf>,
     dirs: &mut Vec<PathBuf>,
     enable_hidden_dirs: bool,
+    ignore_paths: &[PathBuf],
 ) -> io::Result<()> {
     // create a new copy and empty the dirs vector
     let mut _dirs: Vec<PathBuf> = dirs.drain(..).collect();
@@ -109,10 +123,12 @@ fn _store_dirs_and_files(
         let paths = fs::read_dir(dir)?;
         for path_result in paths {
             let full_path = path_result?.path();
-            if full_path.is_dir() {
-                dirs.push(full_path)
-            } else {
-                files.push(full_path)
+            if !(ignore_paths.contains(&full_path)) {
+                if full_path.is_dir() {
+                    dirs.push(full_path)
+                } else {
+                    files.push(full_path)
+                }
             }
         }
     }
@@ -124,12 +140,13 @@ pub fn get_files(
     path: PathBuf,
     max_depth: usize,
     enable_hidden_dirs: bool,
+    ignore_paths: &[PathBuf],
 ) -> io::Result<Vec<PathBuf>> {
     let mut files = Vec::new();
     let mut dirs = vec![path];
 
     for _ in 0..max_depth {
-        _store_dirs_and_files(&mut files, &mut dirs, enable_hidden_dirs)?;
+        _store_dirs_and_files(&mut files, &mut dirs, enable_hidden_dirs, ignore_paths)?;
     }
 
     Ok(files)
@@ -144,8 +161,8 @@ mod tests {
         let src_dir = PathBuf::from(r"./test/src");
         let des_dir = PathBuf::from(r"./test/des");
 
-        let mut src_files = get_files(src_dir, 2, true)?;
-        let mut des_files = get_files(des_dir, 2, true)?;
+        let mut src_files = get_files(src_dir, 2, true, &[])?;
+        let mut des_files = get_files(des_dir, 2, true, &[])?;
         src_files.sort();
         des_files.sort();
 
@@ -176,7 +193,7 @@ mod tests {
     fn test_max_depth() -> Result<(), Box<dyn Error>> {
         let des_dir = PathBuf::from(r"./test/des");
 
-        let mut des_files = get_files(des_dir, 1, true)?;
+        let mut des_files = get_files(des_dir, 1, true, &[])?;
         des_files.sort();
 
         assert_eq!(
@@ -196,8 +213,8 @@ mod tests {
         let src_dir = PathBuf::from(r"./test/src");
         let des_dir = PathBuf::from(r"./test/des");
 
-        let mut src_files = get_files(src_dir, 2, true)?;
-        let mut des_files = get_files(des_dir, 2, true)?;
+        let mut src_files = get_files(src_dir, 2, true, &[])?;
+        let mut des_files = get_files(des_dir, 2, true, &[])?;
         src_files.sort();
         des_files.sort();
         // remove 1st 2 files
@@ -219,8 +236,8 @@ mod tests {
         let src_dir = PathBuf::from(r"./test/src");
         let des_dir = PathBuf::from(r"./test/des");
 
-        let mut src_files = get_files(src_dir, 2, true)?;
-        let mut des_files = get_files(des_dir, 2, true)?;
+        let mut src_files = get_files(src_dir, 2, true, &[])?;
+        let mut des_files = get_files(des_dir, 2, true, &[])?;
         src_files.sort();
         des_files.sort();
         // remove last 2 files
