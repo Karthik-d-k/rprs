@@ -1,7 +1,7 @@
 [package]
 name = "rprs"
 description = "A CLI app for replacing files from source to desination directory."
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = ["Karthik D K <karthikdk1998@gmail.com>"]
 
