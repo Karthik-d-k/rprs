@@ -13,16 +13,16 @@ struct Cli {
     /// Path to destinatin directory
     des_dir: PathBuf,
     /// Enabling case sensitivity for file names while replacing
-    #[arg(short = 'c', long)]
+    #[arg(short = 'C', long)]
     enable_case_sensitive: bool,
     /// Enabling hidden directories for replacing files
-    #[arg(short = 'h', long)]
+    #[arg(short = 'H', long)]
     enable_hidden_dirs: bool,
     /// maximum allowed depth to recurse through source directory
-    #[arg(short = 'd', long, default_value_t = 255)]
+    #[arg(short = 'D', long, default_value_t = 255)]
     max_depth: usize,
     /// list of file paths to ignore
-    #[arg(short = 'i', long)]
+    #[arg(short = 'I', long)]
     ignore_paths: Vec<PathBuf>,
 }
 
