@@ -74,7 +74,7 @@ pub fn store_files_and_dirs(
 ) -> io::Result<()> {
     // create a new copy and empty the dirs vector
     let mut _dirs: Vec<PathBuf> = dirs.drain(..).collect();
-    // remove hidden files if flag is enabled
+    // remove hidden files if flag is disabled
     if !enable_hidden_dirs {
         _dirs.retain(|dir| !is_hidden(dir));
     }
