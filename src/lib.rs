@@ -50,6 +50,60 @@ pub fn run() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
+pub fn get_files(
+    path: PathBuf,
+    max_depth: usize,
+    enable_hidden_dirs: bool,
+    ignore_paths: &[PathBuf],
+) -> io::Result<Vec<PathBuf>> {
+    let mut files = Vec::new();
+    let mut dirs = vec![path];
+
+    for _ in 0..max_depth {
+        store_files_and_dirs(&mut files, &mut dirs, enable_hidden_dirs, ignore_paths)?;
+    }
+
+    Ok(files)
+}
+
+pub fn store_files_and_dirs(
+    files: &mut Vec<PathBuf>,
+    dirs: &mut Vec<PathBuf>,
+    enable_hidden_dirs: bool,
+    ignore_paths: &[PathBuf],
+) -> io::Result<()> {
+    // create a new copy and empty the dirs vector
+    let mut _dirs: Vec<PathBuf> = dirs.drain(..).collect();
+    // remove hidden files if flag is enabled
+    if !enable_hidden_dirs {
+        _dirs.retain(|dir| !is_hidden(dir));
+    }
+
+    for dir in &_dirs {
+        let paths = fs::read_dir(dir)?;
+        for path_result in paths {
+            let full_path = path_result?.path();
+            if !(ignore_paths.contains(&full_path)) {
+                if full_path.is_dir() {
+                    dirs.push(full_path)
+                } else {
+                    files.push(full_path)
+                }
+            }
+        }
+    }
+
+    Ok(())
+}
+
+pub fn is_hidden(dir: &Path) -> bool {
+    dir.file_name()
+        .unwrap_or_default()
+        .to_str()
+        .map(|s| s.starts_with('.'))
+        .unwrap_or(false)
+}
+
 pub fn replace_files(
     src_files: &Vec<PathBuf>,
     des_files: &Vec<PathBuf>,
@@ -96,60 +150,6 @@ pub fn replace_files_case_insensitive(
     pb.finish();
 
     Ok(())
-}
-
-fn is_hidden(dir: &Path) -> bool {
-    dir.file_name()
-        .unwrap_or_default()
-        .to_str()
-        .map(|s| s.starts_with('.'))
-        .unwrap_or(false)
-}
-
-fn _store_dirs_and_files(
-    files: &mut Vec<PathBuf>,
-    dirs: &mut Vec<PathBuf>,
-    enable_hidden_dirs: bool,
-    ignore_paths: &[PathBuf],
-) -> io::Result<()> {
-    // create a new copy and empty the dirs vector
-    let mut _dirs: Vec<PathBuf> = dirs.drain(..).collect();
-    // remove hidden files if flag is enabled
-    if !enable_hidden_dirs {
-        _dirs.retain(|dir| !is_hidden(dir));
-    }
-
-    for dir in &_dirs {
-        let paths = fs::read_dir(dir)?;
-        for path_result in paths {
-            let full_path = path_result?.path();
-            if !(ignore_paths.contains(&full_path)) {
-                if full_path.is_dir() {
-                    dirs.push(full_path)
-                } else {
-                    files.push(full_path)
-                }
-            }
-        }
-    }
-
-    Ok(())
-}
-
-pub fn get_files(
-    path: PathBuf,
-    max_depth: usize,
-    enable_hidden_dirs: bool,
-    ignore_paths: &[PathBuf],
-) -> io::Result<Vec<PathBuf>> {
-    let mut files = Vec::new();
-    let mut dirs = vec![path];
-
-    for _ in 0..max_depth {
-        _store_dirs_and_files(&mut files, &mut dirs, enable_hidden_dirs, ignore_paths)?;
-    }
-
-    Ok(files)
 }
 
 #[cfg(test)]
