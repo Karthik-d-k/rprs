@@ -1,16 +1,18 @@
-use std::error::Error;
 use std::path::{Path, PathBuf};
 use std::{fs, io};
 
 use clap::Parser;
 use indicatif::{ProgressBar, ProgressStyle};
 
+pub type Error = Box<dyn std::error::Error>;
+pub type Result<T> = std::result::Result<T, Error>;
+
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
 struct Cli {
     /// Path to source directory
     src_dir: PathBuf,
-    /// Path to destinatin directory
+    /// Path to destination directory
     des_dir: PathBuf,
     /// Enabling case sensitivity for file names while replacing
     #[arg(short = 'C', long)]
@@ -26,7 +28,7 @@ struct Cli {
     ignore_paths: Vec<PathBuf>,
 }
 
-pub fn run() -> Result<(), Box<dyn Error>> {
+pub fn run() -> Result<()> {
     let args = Cli::parse();
     let src_files = get_files(
         args.src_dir,
@@ -104,10 +106,7 @@ pub fn is_hidden(dir: &Path) -> bool {
         .unwrap_or(false)
 }
 
-pub fn replace_files(
-    src_files: &Vec<PathBuf>,
-    des_files: &Vec<PathBuf>,
-) -> Result<(), Box<dyn Error>> {
+pub fn replace_files(src_files: &Vec<PathBuf>, des_files: &Vec<PathBuf>) -> Result<()> {
     let pb = ProgressBar::new(src_files.len() as u64);
     pb.set_style(
         ProgressStyle::with_template("[{wide_bar:.cyan/blue}] [{elapsed_precise}]").unwrap(),
@@ -129,7 +128,7 @@ pub fn replace_files(
 pub fn replace_files_case_insensitive(
     src_files: &Vec<PathBuf>,
     des_files: &Vec<PathBuf>,
-) -> Result<(), Box<dyn Error>> {
+) -> Result<()> {
     let pb = ProgressBar::new(src_files.len() as u64);
     pb.set_style(
         ProgressStyle::with_template("[{wide_bar:.cyan/blue}] [{elapsed_precise}]").unwrap(),
@@ -157,7 +156,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_get_files() -> Result<(), Box<dyn Error>> {
+    fn test_get_files() -> Result<()> {
         let src_dir = PathBuf::from(r"./test/src");
         let des_dir = PathBuf::from(r"./test/des");
 
@@ -190,7 +189,7 @@ mod tests {
     }
 
     #[test]
-    fn test_max_depth() -> Result<(), Box<dyn Error>> {
+    fn test_max_depth() -> Result<()> {
         let des_dir = PathBuf::from(r"./test/des");
 
         let mut des_files = get_files(des_dir, 1, true, &[])?;
@@ -209,7 +208,7 @@ mod tests {
     }
 
     #[test]
-    fn test_replace_files() -> Result<(), Box<dyn Error>> {
+    fn test_replace_files() -> Result<()> {
         let src_dir = PathBuf::from(r"./test/src");
         let des_dir = PathBuf::from(r"./test/des");
 
@@ -232,7 +231,7 @@ mod tests {
     }
 
     #[test]
-    fn test_replace_files_case_insensitive() -> Result<(), Box<dyn Error>> {
+    fn test_replace_files_case_insensitive() -> Result<()> {
         let src_dir = PathBuf::from(r"./test/src");
         let des_dir = PathBuf::from(r"./test/des");
 
