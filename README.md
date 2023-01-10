@@ -23,13 +23,13 @@ $ rprs [OPTIONS] <SRC_DIR> <DES_DIR>
 **Options:**
 
 ```
--C, --enable-case-sensitive
+-c, --enable-case-sensitive
         Enabling case sensitivity for file names while replacing
--H, --enable-hidden-dirs
+-., --enable-hidden-dirs
         Enabling hidden directories for replacing files
--D, --max-depth <MAX_DEPTH>
+-d, --max-depth <MAX_DEPTH>
         maximum allowed depth to recurse through source directory [default: 255]
--I, --ignore-paths <IGNORE_PATHS>
+-i, --ignore-paths <IGNORE_PATHS>
         list of file paths to ignore
 -h, --help
         Print help information
