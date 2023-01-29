@@ -1,6 +1,6 @@
 # rprs
 
-:crab: A CLI app for replacing files.
+:crab: A CLI application for replacing file(s).
 
 ## Install
 
@@ -10,34 +10,25 @@
 ## Usage
 
 ```bash
-$ rprs [OPTIONS] <SRC_DIR> <DES_DIR>
+$ rprs <SRC_PATH> <DES_PATH>
 ```
 
 **Arguments:**
 
 ```
-<SRC_DIR>  Path to source directory
-<DES_DIR>  Path to destinatin directory
+<SRC_PATH>  Source files(s) or a directory
+<DES_PATH>  Destination files(s) or a directory
 ```
 
 **Options:**
 
 ```
--c, --enable-case-sensitive
-        Enabling case sensitivity for file names while replacing
--., --enable-hidden-dirs
-        Enabling hidden directories for replacing files
--d, --max-depth <MAX_DEPTH>
-        maximum allowed depth to recurse through source directory [default: 255]
--i, --ignore-paths <IGNORE_PATHS>
-        list of file paths to ignore
 -h, --help
         Print help information
 -V, --version
         Print version information
 ```
 
-> By default, `hidden directories` that starts with `.` are untouched !!!
 
 ## Caveats
 
