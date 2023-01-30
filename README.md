@@ -16,8 +16,8 @@ $ rprs <SRC_PATH> <DES_PATH>
 **Arguments:**
 
 ```
-<SRC_PATH>  Source files(s) or a directory
-<DES_PATH>  Destination files(s) or a directory
+<SRC_PATH>  Source file or a directory
+<DES_PATH>  Destination file or a directory
 ```
 
 **Options:**
